@@ -12,6 +12,29 @@
         <vm:MainWindowViewModel/>
     </Window.DataContext>
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="24"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <Button x:Name="buttonStart" Content="Start" Margin="5, 10" MinWidth="60"/>
+            <Button x:Name="buttonPause" Content="Pause" Margin="5, 10" MinWidth="60"/>
+            <Button x:Name="buttonStop" Content="Stop" Margin="5, 10" MinWidth="60"/>
+            <Button x:Name="buttonClear" Content="Clear" Margin="5, 10" MinWidth="60"/>
+            <Button x:Name="buttonExport" Content="Export" Margin="5, 10" MinWidth="60"/>
+        </StackPanel>
+        <StatusBar Grid.Row="2">
+            <StatusBarItem>Total: 0</StatusBarItem>
+            <StatusBarItem>Good: 0</StatusBarItem>
+            <StatusBarItem>Bad: 0</StatusBarItem>
+
+            <StatusBarItem>Time: 0:00</StatusBarItem>
+            <StatusBarItem>Estimated time: 5:00</StatusBarItem>
+        </StatusBar>
+        <DataGrid x:Name="dataGrid" Grid.Row="1"/>
+
+
 
     </Grid>
 </Window>
