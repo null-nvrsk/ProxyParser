@@ -7,7 +7,8 @@
         xmlns:vm="clr-namespace:ProxyParser.ViewModels"
         mc:Ignorable="d"
         Title="{Binding Title}"
-        Height="450" Width="800">
+        Height="450" MinHeight="300"
+        Width="800" MinWidth="450">
     <Window.DataContext>
         <vm:MainWindowViewModel/>
     </Window.DataContext>
@@ -18,11 +19,11 @@
             <RowDefinition Height="24"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Horizontal">
-            <Button x:Name="buttonStart" Content="Start" Margin="5, 10" MinWidth="60"/>
-            <Button x:Name="buttonPause" Content="Pause" Margin="5, 10" MinWidth="60"/>
-            <Button x:Name="buttonStop" Content="Stop" Margin="5, 10" MinWidth="60"/>
-            <Button x:Name="buttonClear" Content="Clear" Margin="5, 10" MinWidth="60"/>
-            <Button x:Name="buttonExport" Content="Export" Margin="5, 10" MinWidth="60"/>
+            <Button x:Name="buttonStart" Content="Start" Margin="5, 10" MinWidth="60" Command="{Binding StartParsingCommand}"/>
+            <Button x:Name="buttonPause" Content="Pause" Margin="5, 10" MinWidth="60" Command="{Binding PauseParsingCommand}"/>
+            <Button x:Name="buttonStop" Content="Stop" Margin="5, 10" MinWidth="60" Command="{Binding StopParsingCommand}"/>
+            <Button x:Name="buttonClear" Content="Clear" Margin="5, 10" MinWidth="60" Command="{Binding ClearParsingResultCommand}"/>
+            <Button x:Name="buttonExport" Content="Export" Margin="5, 10" MinWidth="60" Command="{Binding ExportParsingResultCommand}"/>
         </StackPanel>
         <StatusBar Grid.Row="2">
             Total:
