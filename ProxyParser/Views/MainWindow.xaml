@@ -25,16 +25,35 @@
             <Button x:Name="buttonExport" Content="Export" Margin="5, 10" MinWidth="60"/>
         </StackPanel>
         <StatusBar Grid.Row="2">
-            <StatusBarItem>Total: 0</StatusBarItem>
-            <StatusBarItem>Good: 0</StatusBarItem>
-            <StatusBarItem>Bad: 0</StatusBarItem>
+            Total:
+            <StatusBarItem>
+                <TextBlock Text="{Binding ProxyTotal}"></TextBlock>
+            </StatusBarItem>
+            <Separator/>
 
-            <StatusBarItem>Time: 0:00</StatusBarItem>
-            <StatusBarItem>Estimated time: 5:00</StatusBarItem>
+            Good:
+            <StatusBarItem>
+                <TextBlock Text="{Binding ProxyGood}"></TextBlock>
+            </StatusBarItem>
+            <Separator/>
+
+            Bad:
+            <StatusBarItem>
+                <TextBlock Text="{Binding ProxyBad}"></TextBlock>
+            </StatusBarItem>
+            <Separator/>
+
+            Time:
+            <StatusBarItem>
+                <TextBlock Text="{Binding TimeElapsed}"></TextBlock>
+            </StatusBarItem>
+            <Separator/>
+
+            Estimated time:
+            <StatusBarItem>
+                <TextBlock Text="{Binding TimeEstimated}"></TextBlock>
+            </StatusBarItem>
         </StatusBar>
         <DataGrid x:Name="dataGrid" Grid.Row="1"/>
-
-
-
     </Grid>
 </Window>
