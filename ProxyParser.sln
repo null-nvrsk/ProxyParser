@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31105.61
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProxyParser", "ProxyParser\ProxyParser.csproj", "{65C8C2D5-151D-48F2-BB29-7C0C0D39A521}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProxyParser", "ProxyParser\ProxyParser.csproj", "{65C8C2D5-151D-48F2-BB29-7C0C0D39A521}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{98158E38-3D95-4252-B7B2-E8C9194D7D21}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProxyParserConsole", "ProxyParserConsole\ProxyParserConsole.csproj", "{3AB584B9-2365-4462-8D99-C043EB8F425A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,9 +19,16 @@ Global
 		{65C8C2D5-151D-48F2-BB29-7C0C0D39A521}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65C8C2D5-151D-48F2-BB29-7C0C0D39A521}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{65C8C2D5-151D-48F2-BB29-7C0C0D39A521}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3AB584B9-2365-4462-8D99-C043EB8F425A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3AB584B9-2365-4462-8D99-C043EB8F425A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3AB584B9-2365-4462-8D99-C043EB8F425A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3AB584B9-2365-4462-8D99-C043EB8F425A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3AB584B9-2365-4462-8D99-C043EB8F425A} = {98158E38-3D95-4252-B7B2-E8C9194D7D21}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BAFDB6E4-A837-4A84-9CF8-0B0E2B3106AA}
