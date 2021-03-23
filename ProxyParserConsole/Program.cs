@@ -77,14 +77,14 @@ namespace ProxyParserConsole
                         string country = cols[2].FindElement(By.CssSelector("span.country")).Text;
                         Console.WriteLine($"Country = {country}");
                     }
-                    catch (Exception e) { throw; }
+                    catch (Exception) { throw; }
 
                     try
                     {
                         string city = cols[2].FindElement(By.CssSelector("span.city")).Text;
                         Console.WriteLine($"City = {city}");
                     }
-                    catch (Exception e) { throw; }
+                    catch (Exception) { throw; }
 
                     //Console.WriteLine($"Country, City = {cols[2].Text}");
                     Console.WriteLine($"Speed = {cols[3].Text}");
