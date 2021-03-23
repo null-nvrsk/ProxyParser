@@ -102,6 +102,6 @@
                 <TextBlock Text="{Binding TimeEstimated}"></TextBlock>
             </StatusBarItem>
         </StatusBar>
-        <DataGrid x:Name="dataGrid" Grid.Row="1"/>
+        <DataGrid x:Name="proxyDataGrid" Grid.Row="1" ItemsSource="{Binding ProxyList}"/>
     </Grid>
 </Window>

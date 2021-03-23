@@ -1,15 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
 using ProxyParser.Infrastructure.Commands;
+using ProxyParser.Models;
 using ProxyParser.ViewModels.Base;
 
 namespace ProxyParser.ViewModels
 {
     internal class MainWindowViewModel : ViewModelBase
     {
+        private ObservableCollection<ProxyInfo> _proxyList = new ObservableCollection<ProxyInfo>();
+        /// <summary>Список прокси</summary>
+        public ObservableCollection<ProxyInfo> ProxyList
+        {
+            get => _proxyList;
+            set => Set(ref _proxyList, value);
+        }
+
+
+
         #region Window title
 
         private string _Title = "Default title";
@@ -101,8 +116,7 @@ namespace ProxyParser.ViewModels
             _parsingStarted = true;
             _parsingPaused = false;
 
-            // Заглушка!!!
-            MessageBox.Show("Parsing started");
+            ParseSiteHideMyName(ProxyList);
         }
 
         private bool CanStartParsingCommandExecute(object p) => !_parsingStarted;
@@ -183,6 +197,10 @@ namespace ProxyParser.ViewModels
 
         public MainWindowViewModel()
         {
+            //ProxyList.Add(new ProxyInfo { Ip = "8.8.8.8", Port = 80 });
+            //ProxyList.Add(new ProxyInfo { Ip = "9.9.9.9", Port = 1080 });
+            //ProxyList.Add(new ProxyInfo { Ip = "12.34.56.78", Port = 8080 });
+
             #region Commands
 
             StartParsingCommand = new RelayCommand(OnStartParsingCommandExecuted, CanStartParsingCommandExecute);
@@ -194,6 +212,64 @@ namespace ProxyParser.ViewModels
             #endregion
 
         }
-    }
 
+        private const string dataUrl = @"https://hidemy.name/en/proxy-list/?maxtime=1500&type=5&anon=234#list";
+
+        private void ParseSiteHideMyName(ObservableCollection<ProxyInfo> _proxyList)
+        {
+            // TOOD: Переделать в сервис
+
+            IWebDriver browser = new ChromeDriver();
+            browser.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20);
+
+            // Start page
+            browser.Navigate().GoToUrl(dataUrl);
+
+            // парсим страницу
+            List<IWebElement> items = browser.FindElements(By.CssSelector("div.table_block tbody tr")).ToList();
+            Console.WriteLine($"Items: {items.Count}");
+
+            int rowCount = 0;
+            foreach (IWebElement row in items)
+            {
+                var cols = row.FindElements(By.CssSelector("td"));
+
+                if (cols.Count != 7) continue;
+
+                ProxyInfo proxy = new ProxyInfo();
+
+                proxy.Ip = cols[0].Text;
+                Console.WriteLine($"({++rowCount}) IP = {proxy.Ip}");
+
+                proxy.Port = Int32.Parse(cols[1].Text);  
+                Console.WriteLine($"Port = {proxy.Port}");
+
+                try
+                {
+                    proxy.Country = cols[2].FindElement(By.CssSelector("span.country")).Text;
+                    Console.WriteLine($"Country = {proxy.Country}");
+                }
+                catch (Exception) { throw; }
+
+                try
+                {
+                    proxy.City = cols[2].FindElement(By.CssSelector("span.city")).Text;
+                    Console.WriteLine($"City = {proxy.City}");
+                }
+                catch (Exception) { throw; }
+
+                // Extract integer from string like "380 ms"
+                char[] trimChars = {' ', 'm', 's'};
+                proxy.LastPing = Int32.Parse(cols[3].Text.TrimEnd(trimChars));
+                Console.WriteLine($"Ping = {proxy.LastPing}");
+                
+                // TODO: Extract proxy type (HTTP, SOCKS4, SOCK5)
+                Console.WriteLine($"Type = {cols[4].Text}");
+
+                _proxyList.Add(proxy);
+            }
+
+            browser.Quit();
+        }
+    }
 }
