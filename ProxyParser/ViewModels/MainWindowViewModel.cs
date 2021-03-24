@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -169,11 +170,10 @@ namespace ProxyParser.ViewModels
 
         private void OnClearParsingResultCommandExecuted(object p)
         {
-            // Заглушка!!!
-            MessageBox.Show("Parsing result clear");
+            ProxyList.Clear();
         }
 
-        private bool CanClearParsingResultCommandExecute(object p) => !_parsingStarted;
+        private bool CanClearParsingResultCommandExecute(object p) => (ProxyList.Count > 0);
 
         #endregion
 
@@ -183,11 +183,17 @@ namespace ProxyParser.ViewModels
 
         private void OnExportParsingResultCommandExecuted(object p)
         {
-            // Заглушка!!!
-            MessageBox.Show("Export parsing result");
+            using (var writer = new StreamWriter("proxy.txt"))
+            {
+                foreach (ProxyInfo item in ProxyList)
+                {
+
+                    writer.WriteLine($"{item.Ip}:{item.Port}");
+                }
+            }
         }
 
-        private bool CanExportParsingResultCommandExecute(object p) => !_parsingStarted;
+        private bool CanExportParsingResultCommandExecute(object p) => (ProxyList.Count > 0);
 
         #endregion
 
