@@ -11,7 +11,7 @@
         Height="450" MinHeight="300"
         Width="800" MinWidth="450">
     <Window.DataContext>
-        <vm:MainWindowViewModel/>
+        <vm:MainWindowViewModel />
     </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>

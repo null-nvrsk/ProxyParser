@@ -9,7 +9,9 @@ using System.Windows.Input;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using ProxyParser.Infrastructure.Commands;
+using ProxyParser.Infrastructure.Interfaces;
 using ProxyParser.Models;
+using ProxyParser.Services;
 using ProxyParser.ViewModels.Base;
 
 namespace ProxyParser.ViewModels
@@ -24,6 +26,13 @@ namespace ProxyParser.ViewModels
             set => Set(ref _proxyList, value);
         }
 
+
+        #region Services
+
+        IDialogService dialogService;
+        IFileService fileService;
+
+        #endregion
 
 
         #region Window title
@@ -183,13 +192,26 @@ namespace ProxyParser.ViewModels
 
         private void OnExportParsingResultCommandExecuted(object p)
         {
-            using (var writer = new StreamWriter("proxy.txt"))
-            {
-                foreach (ProxyInfo item in ProxyList)
-                {
+            //using (var writer = new StreamWriter("proxy.txt"))
+            //{
+            //    foreach (ProxyInfo item in ProxyList)
+            //    {
 
-                    writer.WriteLine($"{item.Ip}:{item.Port}");
+            //        writer.WriteLine($"{item.Ip}:{item.Port}");
+            //    }
+            //}
+
+            try
+            {
+                if (dialogService.SaveFileDialog() == true)
+                {
+                    fileService.Save(dialogService.FilePath, ProxyList);
+                    dialogService.ShowMessage("Файл сохранен");
                 }
+            }
+            catch (Exception ex)
+            {
+                dialogService.ShowMessage(ex.Message);
             }
         }
 
@@ -203,6 +225,9 @@ namespace ProxyParser.ViewModels
 
         public MainWindowViewModel()
         {
+            dialogService = new DefaultDialogService();
+            fileService = new TxtFileService();
+
             //ProxyList.Add(new ProxyInfo { Ip = "8.8.8.8", Port = 80 });
             //ProxyList.Add(new ProxyInfo { Ip = "9.9.9.9", Port = 1080 });
             //ProxyList.Add(new ProxyInfo { Ip = "12.34.56.78", Port = 8080 });
