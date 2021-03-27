@@ -126,7 +126,7 @@ namespace ProxyParser.ViewModels
             _parsingStarted = true;
             _parsingPaused = false;
 
-            ParseSiteHideMyName(ProxyList);
+            ParseSiteHideMyName(/*ProxyList*/);
         }
 
         private bool CanStartParsingCommandExecute(object p) => !_parsingStarted;
@@ -239,7 +239,7 @@ namespace ProxyParser.ViewModels
         // private const string dataUrl = @"https://hidemy.name/en/proxy-list/?maxtime=1500&type=5&anon=234#list"; // SOCKS5
         private const string dataUrl = @"https://hidemy.name/en/proxy-list/?maxtime=1500&type=4&anon=234#list"; // SOCKS4
 
-        private void ParseSiteHideMyName(ObservableCollection<ProxyInfo> _proxyList)
+        private void ParseSiteHideMyName(/*ObservableCollection<ProxyInfo> _proxyList*/)
         {
             // TOOD: Переделать в сервис
 
@@ -260,40 +260,57 @@ namespace ProxyParser.ViewModels
 
                 if (cols.Count != 7) continue;
 
-                ProxyInfo proxy = new ProxyInfo();
-
-                proxy.Id = ProxyList.Count + 1;
-
-                proxy.Ip = cols[0].Text;
-                Console.WriteLine($"({++rowCount}) IP = {proxy.Ip}");
-
-                proxy.Port = Int32.Parse(cols[1].Text);  
-                Console.WriteLine($"Port = {proxy.Port}");
-
-                try
-                {
-                    proxy.Country = cols[2].FindElement(By.CssSelector("span.country")).Text;
-                    Console.WriteLine($"Country = {proxy.Country}");
-                }
-                catch (Exception) { throw; }
-
-                try
-                {
-                    proxy.City = cols[2].FindElement(By.CssSelector("span.city")).Text;
-                    Console.WriteLine($"City = {proxy.City}");
-                }
-                catch (Exception) { throw; }
+                // проверка повтор
+                string Ip = cols[0].Text;
+                bool ProxyExist = ProxyList.Where(p => p.Ip == Ip).Any();
 
                 // Extract integer from string like "380 ms"
-                char[] trimChars = {' ', 'm', 's'};
-                proxy.LastPing = Int32.Parse(cols[3].Text.TrimEnd(trimChars));
-                Console.WriteLine($"Ping = {proxy.LastPing}");
-                
-                // TODO: Extract proxy type (HTTP, SOCKS4, SOCK5)
-                Console.WriteLine($"Type = {cols[4].Text}");
+                char[] trimChars = { ' ', 'm', 's' };
+                int ping = Int32.Parse(cols[3].Text.TrimEnd(trimChars));
 
-                ProxyTotal++;
-                _proxyList.Add(proxy);
+
+                if (!ProxyExist)
+                {
+                    // Если новый прокси, то добавляем в список
+                    ProxyInfo proxy = new ProxyInfo();
+
+                    proxy.Id = ProxyList.Count + 1;
+
+                    proxy.Ip = Ip;
+                    Console.WriteLine($"({++rowCount}) IP = {proxy.Ip}");
+
+                    proxy.Port = Int32.Parse(cols[1].Text);
+                    Console.WriteLine($"Port = {proxy.Port}");
+
+                    try
+                    {
+                        proxy.Country = cols[2].FindElement(By.CssSelector("span.country")).Text;
+                        Console.WriteLine($"Country = {proxy.Country}");
+                    }
+                    catch (Exception) { throw; }
+
+                    try
+                    {
+                        proxy.City = cols[2].FindElement(By.CssSelector("span.city")).Text;
+                        Console.WriteLine($"City = {proxy.City}");
+                    }
+                    catch (Exception) { throw; }
+
+                    proxy.LastPing = ping;
+                    Console.WriteLine($"Ping = {proxy.LastPing}");
+
+                    // TODO: Extract proxy type (HTTP, SOCKS4, SOCK5)
+                    Console.WriteLine($"Type = {cols[4].Text}");
+
+                    ProxyTotal++;
+                    _proxyList.Add(proxy);
+                }
+                else
+                {
+                    // Если старый прокси - обновляем пинг
+                    ProxyList.Where(p => p.Ip == Ip).First().LastPing = ping;
+
+                }
             }
 
             browser.Quit();
