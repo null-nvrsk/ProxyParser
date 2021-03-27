@@ -37,7 +37,7 @@ namespace ProxyParser.ViewModels
 
         #region Window title
 
-        private string _Title = "Default title";
+        private string _Title = "Proxy parser";
         /// <summary>Заголовок окна</summary>
         public string Title
         {
@@ -180,6 +180,7 @@ namespace ProxyParser.ViewModels
         private void OnClearParsingResultCommandExecuted(object p)
         {
             ProxyList.Clear();
+            ProxyTotal = ProxyList.Count;
         }
 
         private bool CanClearParsingResultCommandExecute(object p) => (ProxyList.Count > 0);
@@ -235,7 +236,8 @@ namespace ProxyParser.ViewModels
 
         }
 
-        private const string dataUrl = @"https://hidemy.name/en/proxy-list/?maxtime=1500&type=5&anon=234#list";
+        // private const string dataUrl = @"https://hidemy.name/en/proxy-list/?maxtime=1500&type=5&anon=234#list"; // SOCKS5
+        private const string dataUrl = @"https://hidemy.name/en/proxy-list/?maxtime=1500&type=4&anon=234#list"; // SOCKS4
 
         private void ParseSiteHideMyName(ObservableCollection<ProxyInfo> _proxyList)
         {
@@ -288,6 +290,7 @@ namespace ProxyParser.ViewModels
                 // TODO: Extract proxy type (HTTP, SOCKS4, SOCK5)
                 Console.WriteLine($"Type = {cols[4].Text}");
 
+                ProxyTotal++;
                 _proxyList.Add(proxy);
             }
 
