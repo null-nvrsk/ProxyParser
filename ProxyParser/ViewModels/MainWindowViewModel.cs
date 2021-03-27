@@ -192,20 +192,11 @@ namespace ProxyParser.ViewModels
 
         private void OnExportParsingResultCommandExecuted(object p)
         {
-            //using (var writer = new StreamWriter("proxy.txt"))
-            //{
-            //    foreach (ProxyInfo item in ProxyList)
-            //    {
-
-            //        writer.WriteLine($"{item.Ip}:{item.Port}");
-            //    }
-            //}
-
             try
             {
                 if (dialogService.SaveFileDialog() == true)
                 {
-                    fileService.Save(dialogService.FilePath, ProxyList);
+                    fileService.Save(dialogService.FilePath, ProxyList, dialogService.ExportType);
                     dialogService.ShowMessage("Файл сохранен");
                 }
             }
