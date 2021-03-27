@@ -6,6 +6,7 @@ namespace ProxyParser.Models
 {
     public class ProxyInfo
     {
+        public int Id { get; set; }
         public string Ip { get; set; }
         public int Port { get; set; }
         public string Country { get; set; }

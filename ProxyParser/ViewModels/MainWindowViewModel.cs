@@ -262,6 +262,8 @@ namespace ProxyParser.ViewModels
 
                 ProxyInfo proxy = new ProxyInfo();
 
+                proxy.Id = ProxyList.Count + 1;
+
                 proxy.Ip = cols[0].Text;
                 Console.WriteLine($"({++rowCount}) IP = {proxy.Ip}");
 

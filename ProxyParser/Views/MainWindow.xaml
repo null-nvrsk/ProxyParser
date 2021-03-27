@@ -105,6 +105,7 @@
         <DataGrid x:Name="proxyDataGrid" ItemsSource="{Binding ProxyList}"
                   Grid.Row="1" AutoGenerateColumns="False">
             <DataGrid.Columns>
+                <DataGridTextColumn Header="ID" Binding="{Binding Path=Id}" MinWidth="30" MaxWidth="50"/>
                 <DataGridTextColumn Header="IP" Binding="{Binding Path=Ip}" MinWidth="100" Width="2*"/>
                 <DataGridTextColumn Header="Port" Binding="{Binding Path=Port}" MinWidth="50"  Width="*"/>
                 <DataGridTextColumn Header="Country" Binding="{Binding Path=Country}" MinWidth="100" Width="2*" />
