@@ -102,6 +102,18 @@
                 <TextBlock Text="{Binding TimeEstimated}"></TextBlock>
             </StatusBarItem>
         </StatusBar>
-        <DataGrid x:Name="proxyDataGrid" Grid.Row="1" ItemsSource="{Binding ProxyList}"/>
+        <DataGrid x:Name="proxyDataGrid" ItemsSource="{Binding ProxyList}"
+                  Grid.Row="1" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="IP" Binding="{Binding Path=Ip}" MinWidth="100" Width="2*"/>
+                <DataGridTextColumn Header="Port" Binding="{Binding Path=Port}" MinWidth="50"  Width="*"/>
+                <DataGridTextColumn Header="Country" Binding="{Binding Path=Country}" MinWidth="100" Width="2*" />
+                <DataGridTextColumn Header="State" Binding="{Binding Path=State}" MinWidth="100" Width="2*" />
+                <DataGridTextColumn Header="City" Binding="{Binding Path=City}" MinWidth="100" Width="2*" />
+                <DataGridTextColumn Header="Last check" Binding="{Binding Path=LastCheck}" MinWidth="100" Width="2*" />
+                <DataGridTextColumn Header="Speed" Binding="{Binding Path=LastSpeed}" MinWidth="50" Width="*" />
+                <DataGridTextColumn Header="Ping" Binding="{Binding Path=LastPing}" MinWidth="50" Width="*" />
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </Window>
