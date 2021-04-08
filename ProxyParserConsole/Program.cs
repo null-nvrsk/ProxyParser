@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
@@ -12,9 +13,7 @@ namespace ProxyParserConsole
 {
     class Program
     {
-        // определяет как бота
-        // Через Selenium работает
-        private const string dataUrl = @"https://hidemy.name/en/proxy-list/?maxtime=1500&type=5&anon=234#list";
+        private const string dataUrl = @"https://hidemy.name/en/proxy-list/?maxtime=1500&type=s45&anon=234#list";
         // private const string dataUrl = @"https://spys.one/proxys/US/";
         // private const string dataUrl = @"http://free-proxy.cz/ru/proxylist/country/all/socks5/ping/all";
 
@@ -29,24 +28,68 @@ namespace ProxyParserConsole
 
         static void Main(string[] args)
         {
+            
+            ParseWithHttpClient();
+            // ParseWithSelenium();
 
+            Console.ReadLine();
+        }
+
+        public static async void ParseWithHttpClient()
+        {
             // Чистый HTML
-            //HttpClient client = new HttpClient();
-            //var response = await client.GetAsync(dataUrl);
-            //var content = await response.Content.ReadAsStringAsync();
+            HttpClient client = new HttpClient();
 
-            //Console.WriteLine(content);
+            client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36");
 
-            // Парсинг через HtmlAgilityPack
-            //var web = new HtmlWeb();
-            //var doc = web.Load(dataUrl);
+            // TODO: добавить еще куки
 
-            //var h1 = doc.DocumentNode
-            //    .SelectNodes("//body//h1")
-            //    .First().InnerHtml;
+            var response = await client.GetAsync(dataUrl);
+            var content = await response.Content.ReadAsStringAsync();
 
-            //Console.WriteLine(h1);
+            // Console.WriteLine(content);
 
+            // Парсинг через HtmlAgilityPack 
+
+            var doc = new HtmlDocument();
+            doc.LoadHtml(content);
+
+            // //*[@class="table_block"]/table/tbody/tr[1]/td[1]
+            var rows = doc.DocumentNode
+                .SelectNodes("//*[@class='table_block']/table/tbody/tr");
+
+
+            Console.WriteLine($"Items: {rows.Count}");
+            int rowCount = 0;
+
+            foreach (var row in rows)
+            {
+                var cols = row.SelectNodes("td");
+                if (cols is null || cols.Count != 7) continue;
+
+                Console.WriteLine($"({++rowCount}) IP = {cols[0].InnerText}");
+                Console.WriteLine($"Port = {cols[1].InnerText}");
+                try
+                {
+                    string country = cols[2].SelectSingleNode("//span[@class='country']").InnerText;
+                    Console.WriteLine($"Country = {country}");
+                }
+                catch (Exception) { throw; }
+
+                try
+                {
+                    string city = cols[2].SelectSingleNode("//span[@class='city']").InnerText;
+                    Console.WriteLine($"City = {city}");
+                }
+                catch (Exception) { throw; }
+
+                Console.WriteLine($"Speed = {cols[3].InnerText}");
+                Console.WriteLine($"Type = {cols[4].InnerText}");
+            }
+        }
+
+        public static void ParseWithSelenium()
+        {
             IWebDriver browser = new ChromeDriver();
             //Browser.Manage().Window.Maximize();
             browser.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20);
@@ -62,7 +105,7 @@ namespace ProxyParserConsole
             int rowCount = 0;
             foreach (IWebElement row in items)
             {
-                
+
                 //Console.WriteLine($"row = {row}");
 
                 var cols = row.FindElements(By.CssSelector("td"));
@@ -98,7 +141,6 @@ namespace ProxyParserConsole
             }
 
             browser.Quit();
-            //Console.ReadLine();
         }
 
     }
