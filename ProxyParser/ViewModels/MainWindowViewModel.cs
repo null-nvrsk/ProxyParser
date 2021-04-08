@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using HtmlAgilityPack;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using ProxyParser.Infrastructure.Commands;
@@ -126,7 +129,7 @@ namespace ProxyParser.ViewModels
             _parsingStarted = true;
             _parsingPaused = false;
 
-            ParseSiteHideMyName(/*ProxyList*/);
+            ParseSiteHideMyNameAsync(/*ProxyList*/);
         }
 
         private bool CanStartParsingCommandExecute(object p) => !_parsingStarted;
@@ -237,36 +240,47 @@ namespace ProxyParser.ViewModels
         }
 
         // private const string dataUrl = @"https://hidemy.name/en/proxy-list/?maxtime=1500&type=5&anon=234#list"; // SOCKS5
-        private const string dataUrl = @"https://hidemy.name/en/proxy-list/?maxtime=1500&type=4&anon=234#list"; // SOCKS4
+        private const string dataUrl = @"https://hidemy.name/en/proxy-list/?maxtime=1500&type=s45&anon=234#list"; // HTTPS, SOCKS4, SOCKS5
 
-        private void ParseSiteHideMyName(/*ObservableCollection<ProxyInfo> _proxyList*/)
+        private async Task ParseSiteHideMyNameAsync(/*ObservableCollection<ProxyInfo> _proxyList*/)
         {
             // TOOD: Переделать в сервис
 
-            IWebDriver browser = new ChromeDriver();
-            browser.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20);
+            // Чистый HTML
+            HttpClient client = new HttpClient();
+            client.Timeout = TimeSpan.FromSeconds(5);
 
-            // Start page
-            browser.Navigate().GoToUrl(dataUrl);
+            client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36");
 
-            // парсим страницу
-            List<IWebElement> items = browser.FindElements(By.CssSelector("div.table_block tbody tr")).ToList();
-            Console.WriteLine($"Items: {items.Count}");
 
+            var response = await client.GetAsync(dataUrl);
+            var content = await response.Content.ReadAsStringAsync();
+
+            // Парсинг через HtmlAgilityPack 
+            var doc = new HtmlDocument();
+            doc.LoadHtml(content);
+
+            // //*[@class="table_block"]/table/tbody/tr[1]/td[1]
+            var rows = doc.DocumentNode
+                .SelectNodes("//*[@class='table_block']/table/tbody/tr");
+
+
+            Console.WriteLine($"Items: {rows.Count}");
             int rowCount = 0;
-            foreach (IWebElement row in items)
-            {
-                var cols = row.FindElements(By.CssSelector("td"));
 
-                if (cols.Count != 7) continue;
+
+            foreach (var row in rows)
+            {
+                var cols = row.SelectNodes("td");
+                if (cols is null || cols.Count != 7) continue;
 
                 // проверка повтор
-                string Ip = cols[0].Text;
+                string Ip = cols[0].InnerText;
                 bool ProxyExist = ProxyList.Where(p => p.Ip == Ip).Any();
 
                 // Extract integer from string like "380 ms"
                 char[] trimChars = { ' ', 'm', 's' };
-                int ping = Int32.Parse(cols[3].Text.TrimEnd(trimChars));
+                int ping = Int32.Parse(cols[3].InnerText.TrimEnd(trimChars));
 
 
                 if (!ProxyExist)
@@ -277,33 +291,34 @@ namespace ProxyParser.ViewModels
                     proxy.Id = ProxyList.Count + 1;
 
                     proxy.Ip = Ip;
-                    Console.WriteLine($"({++rowCount}) IP = {proxy.Ip}");
+                    //Console.WriteLine($"({++rowCount}) IP = {proxy.Ip}");
 
-                    proxy.Port = Int32.Parse(cols[1].Text);
-                    Console.WriteLine($"Port = {proxy.Port}");
+                    proxy.Port = Int32.Parse(cols[1].InnerText);
+                    // Console.WriteLine($"Port = {proxy.Port}");
 
-                    try
-                    {
-                        proxy.Country = cols[2].FindElement(By.CssSelector("span.country")).Text;
-                        Console.WriteLine($"Country = {proxy.Country}");
-                    }
-                    catch (Exception) { throw; }
+                    // try
+                    // {
+                    string col2 = cols[2].InnerText;
+                        proxy.Country = cols[2].SelectNodes("span[@class='country']").FirstOrDefault().InnerText;
+                        // Console.WriteLine($"Country = {proxy.Country}");
+                   // }
+                   // catch (Exception) { throw; }
 
-                    try
-                    {
-                        proxy.City = cols[2].FindElement(By.CssSelector("span.city")).Text;
-                        Console.WriteLine($"City = {proxy.City}");
-                    }
-                    catch (Exception) { throw; }
+                    //try
+                    // {
+                        proxy.City = cols[2].SelectSingleNode(@"span[@class='city']").InnerHtml;
+                        // Console.WriteLine($"City = {proxy.City}");
+                    //}
+                    //catch (Exception) { throw; }
 
                     proxy.LastPing = ping;
-                    Console.WriteLine($"Ping = {proxy.LastPing}");
+                    //Console.WriteLine($"Ping = {proxy.LastPing}");
 
                     // TODO: Extract proxy type (HTTP, SOCKS4, SOCK5)
-                    Console.WriteLine($"Type = {cols[4].Text}");
+                    //Console.WriteLine($"Type = {cols[4].InnerText}");
 
                     ProxyTotal++;
-                    _proxyList.Add(proxy);
+                    ProxyList.Add(proxy);
                 }
                 else
                 {
@@ -312,8 +327,6 @@ namespace ProxyParser.ViewModels
 
                 }
             }
-
-            browser.Quit();
         }
     }
 }

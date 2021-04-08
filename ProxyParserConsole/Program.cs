@@ -39,6 +39,7 @@ namespace ProxyParserConsole
         {
             // Чистый HTML
             HttpClient client = new HttpClient();
+            client.Timeout = TimeSpan.FromSeconds(5);
 
             client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36");
 
@@ -50,7 +51,6 @@ namespace ProxyParserConsole
             // Console.WriteLine(content);
 
             // Парсинг через HtmlAgilityPack 
-
             var doc = new HtmlDocument();
             doc.LoadHtml(content);
 
@@ -71,6 +71,7 @@ namespace ProxyParserConsole
                 Console.WriteLine($"Port = {cols[1].InnerText}");
                 try
                 {
+
                     string country = cols[2].SelectSingleNode("//span[@class='country']").InnerText;
                     Console.WriteLine($"Country = {country}");
                 }
