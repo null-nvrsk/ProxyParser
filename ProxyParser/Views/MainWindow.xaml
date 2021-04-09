@@ -99,6 +99,7 @@
                   ItemsSource="{Binding ProxyList}"
                   Grid.Row="1"
                   AutoGenerateColumns="False"
+                  IsReadOnly="True"
                   GridLinesVisibility="Vertical"
                   VerticalGridLinesBrush="LightGray"
                   AlternatingRowBackground="#eee">
