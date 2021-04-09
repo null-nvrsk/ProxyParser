@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using Microsoft.Win32;
 using ProxyParser.Infrastructure;
 using ProxyParser.Infrastructure.Interfaces;
@@ -38,9 +35,9 @@ namespace ProxyParser.Services
                 FilePath = saveFileDialog.FileName;
                 switch (saveFileDialog.FilterIndex)
                 {
-                    case 1: ExportType = FileExportType.plainText; break;
-                    case 2: ExportType = FileExportType.csvWithSemecolon; break;
-                    default: ExportType = FileExportType.plainText; break;
+                    case 1: ExportType = FileExportType.PlainText; break;
+                    case 2: ExportType = FileExportType.CsvWithSemecolon; break;
+                    default: ExportType = FileExportType.PlainText; break;
                 }
                
                 return true;

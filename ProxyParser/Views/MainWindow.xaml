@@ -28,7 +28,6 @@
                     </StackPanel>
                 </Button.Content>
             </Button>
-            <!--<Button x:Name="buttonStart" Content="Start" Margin="5, 0" MinWidth="60" Command="{Binding StartParsingCommand}"/>-->
 
             <Button MinWidth="75" Margin="5, 0" Command="{Binding PauseParsingCommand}">
                 <Button.Content>
@@ -38,7 +37,6 @@
                     </StackPanel>
                 </Button.Content>
             </Button>
-            <!--<Button x:Name="buttonPause" Content="Pause" Margin="5, 0" MinWidth="60" Command="{Binding PauseParsingCommand}"/>-->
 
             <Button MinWidth="75" Margin="5, 0" Command="{Binding StopParsingCommand}">
                 <Button.Content>
@@ -48,8 +46,6 @@
                     </StackPanel>
                 </Button.Content>
             </Button>
-            <!--<Button x:Name="buttonStop" Content="Stop" Margin="5, 0" MinWidth="60" Command="{Binding StopParsingCommand}"/>-->
-
 
             <Button MinWidth="75" Margin="5, 0" Command="{Binding ClearParsingResultCommand}">
                 <Button.Content>
@@ -59,8 +55,6 @@
                     </StackPanel>
                 </Button.Content>
             </Button>
-            <!--<Button x:Name="buttonClear" Content="Clear" Margin="5, 0" MinWidth="60" Command="{Binding ClearParsingResultCommand}"/>-->
-
 
             <Button MinWidth="75" Margin="5, 0" Command="{Binding ExportParsingResultCommand}">
                 <Button.Content>
@@ -70,7 +64,6 @@
                     </StackPanel>
                 </Button.Content>
             </Button>
-            <!--<Button x:Name="buttonExport" Content="Export" Margin="5, 0" MinWidth="60" Command="{Binding ExportParsingResultCommand}"/>-->
         </StackPanel>
         <StatusBar Grid.Row="2">
             Total:
@@ -102,8 +95,13 @@
                 <TextBlock Text="{Binding TimeEstimated}"></TextBlock>
             </StatusBarItem>
         </StatusBar>
-        <DataGrid x:Name="proxyDataGrid" ItemsSource="{Binding ProxyList}"
-                  Grid.Row="1" AutoGenerateColumns="False">
+        <DataGrid x:Name="ProxyDataGrid" 
+                  ItemsSource="{Binding ProxyList}"
+                  Grid.Row="1"
+                  AutoGenerateColumns="False"
+                  GridLinesVisibility="Vertical"
+                  VerticalGridLinesBrush="LightGray"
+                  AlternatingRowBackground="#eee">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID" Binding="{Binding Path=Id}" MinWidth="30" MaxWidth="50"/>
                 <DataGridTextColumn Header="IP" Binding="{Binding Path=Ip}" MinWidth="100" Width="2*"/>

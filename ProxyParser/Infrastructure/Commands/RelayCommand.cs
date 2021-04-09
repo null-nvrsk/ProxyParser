@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using ProxyParser.Infrastructure.Commands.Base;
 
 namespace ProxyParser.Infrastructure.Commands

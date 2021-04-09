@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ProxyParser.Services;
-
-namespace ProxyParser.Infrastructure.Interfaces
+﻿namespace ProxyParser.Infrastructure.Interfaces
 {
     public interface IDialogService
     {

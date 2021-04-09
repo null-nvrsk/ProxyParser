@@ -2,6 +2,6 @@
 {
     public enum FileExportType 
     {
-        plainText, csvWithSemecolon
+        PlainText, CsvWithSemecolon
     }
 }

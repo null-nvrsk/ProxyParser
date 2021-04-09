@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading;
-using System.Threading.Tasks;
 using HtmlAgilityPack;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
@@ -13,7 +10,7 @@ namespace ProxyParserConsole
 {
     class Program
     {
-        private const string dataUrl = @"https://hidemy.name/en/proxy-list/?maxtime=1500&type=s45&anon=234#list";
+        private const string DataUrl = @"https://hidemy.name/en/proxy-list/?maxtime=1500&type=s45&anon=234#list";
         // private const string dataUrl = @"https://spys.one/proxys/US/";
         // private const string dataUrl = @"http://free-proxy.cz/ru/proxylist/country/all/socks5/ping/all";
 
@@ -26,7 +23,7 @@ namespace ProxyParserConsole
         // private const string dataUrl = @"https://www.luxuryhomemarketing.com/real-estate-agents/advanced_search.html";
 
 
-        static void Main(string[] args)
+        static void Main()
         {
             
             ParseWithHttpClient();
@@ -45,7 +42,7 @@ namespace ProxyParserConsole
 
             // TODO: добавить еще куки
 
-            var response = await client.GetAsync(dataUrl);
+            var response = await client.GetAsync(DataUrl);
             var content = await response.Content.ReadAsStringAsync();
 
             // Console.WriteLine(content);
@@ -69,20 +66,11 @@ namespace ProxyParserConsole
 
                 Console.WriteLine($"({++rowCount}) IP = {cols[0].InnerText}");
                 Console.WriteLine($"Port = {cols[1].InnerText}");
-                try
-                {
+                string country = cols[2].SelectSingleNode("//span[@class='country']").InnerText;
+                Console.WriteLine($"Country = {country}");
 
-                    string country = cols[2].SelectSingleNode("//span[@class='country']").InnerText;
-                    Console.WriteLine($"Country = {country}");
-                }
-                catch (Exception) { throw; }
-
-                try
-                {
-                    string city = cols[2].SelectSingleNode("//span[@class='city']").InnerText;
-                    Console.WriteLine($"City = {city}");
-                }
-                catch (Exception) { throw; }
+                string city = cols[2].SelectSingleNode("//span[@class='city']").InnerText;
+                Console.WriteLine($"City = {city}");
 
                 Console.WriteLine($"Speed = {cols[3].InnerText}");
                 Console.WriteLine($"Type = {cols[4].InnerText}");
@@ -96,7 +84,7 @@ namespace ProxyParserConsole
             browser.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20);
 
             // Start page
-            browser.Navigate().GoToUrl(dataUrl);
+            browser.Navigate().GoToUrl(DataUrl);
 
 
             // парсим страницу
@@ -116,19 +104,11 @@ namespace ProxyParserConsole
                 {
                     Console.WriteLine($"({++rowCount}) IP = {cols[0].Text}");
                     Console.WriteLine($"Port = {cols[1].Text}");
-                    try
-                    {
-                        string country = cols[2].FindElement(By.CssSelector("span.country")).Text;
-                        Console.WriteLine($"Country = {country}");
-                    }
-                    catch (Exception) { throw; }
+                    string country = cols[2].FindElement(By.CssSelector("span.country")).Text;
+                    Console.WriteLine($"Country = {country}");
 
-                    try
-                    {
-                        string city = cols[2].FindElement(By.CssSelector("span.city")).Text;
-                        Console.WriteLine($"City = {city}");
-                    }
-                    catch (Exception) { throw; }
+                    string city = cols[2].FindElement(By.CssSelector("span.city")).Text;
+                    Console.WriteLine($"City = {city}");
 
                     //Console.WriteLine($"Country, City = {cols[2].Text}");
                     Console.WriteLine($"Speed = {cols[3].Text}");
