@@ -13,13 +13,15 @@ namespace ProxyParser.ViewModels
 
         private void OnStartParsingCommandExecuted(object p)
         {
-            _parsingStarted = true;
-            _parsingPaused = false;
+            ParsingStarted = true;
+            ParsingPaused = false;
 
             _ = ParseSiteHideMyNameAsync( /*ProxyList*/);
+
+            ParsingStarted = false;
         }
 
-        private bool CanStartParsingCommandExecute(object p) => !_parsingStarted;
+        private bool CanStartParsingCommandExecute(object p) => !ParsingStarted;
 
         #endregion
 
@@ -30,19 +32,19 @@ namespace ProxyParser.ViewModels
         private void OnPauseParsingCommandExecuted(object p)
         {
             // Заглушка!!!
-            if (!_parsingPaused)
+            if (!ParsingPaused)
             {
-                _parsingPaused = true;
+                ParsingPaused = true;
                 MessageBox.Show("Parsing paused");
             }
             else
             {
-                _parsingPaused = false;
+                ParsingPaused = false;
                 MessageBox.Show("Parsing resume");
             }
         }
 
-        private bool CanPauseParsingCommandExecute(object p) => _parsingStarted;
+        private bool CanPauseParsingCommandExecute(object p) => ParsingStarted;
 
         #endregion
 
@@ -52,14 +54,14 @@ namespace ProxyParser.ViewModels
 
         private void OnStopParsingCommandExecuted(object p)
         {
-            _parsingStarted = false;
-            _parsingPaused = false;
+            ParsingStarted = false;
+            ParsingPaused = false;
 
             // Заглушка!!!
             MessageBox.Show("Parsing stopped");
         }
 
-        private bool CanStopParsingCommandExecute(object p) => _parsingStarted;
+        private bool CanStopParsingCommandExecute(object p) => ParsingStarted;
 
         #endregion
 
@@ -73,7 +75,7 @@ namespace ProxyParser.ViewModels
             ProxyTotal = ProxyList.Count;
         }
 
-        private bool CanClearParsingResultCommandExecute(object p) => (ProxyList.Count > 0);
+        private bool CanClearParsingResultCommandExecute(object p) => ProxyList.Count > 0 && ParsingStarted == false;
 
         #endregion
 
@@ -96,7 +98,7 @@ namespace ProxyParser.ViewModels
             }
         }
 
-        private bool CanExportParsingResultCommandExecute(object p) => (ProxyList.Count > 0);
+        private bool CanExportParsingResultCommandExecute(object p) => ProxyList.Count > 0 && ParsingStarted == false;
 
         #endregion
     }
