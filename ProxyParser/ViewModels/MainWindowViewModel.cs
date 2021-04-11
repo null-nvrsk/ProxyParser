@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -23,6 +25,15 @@ namespace ProxyParser.ViewModels
             get => _proxyList;
             set => Set(ref _proxyList, value);
         }
+
+        private Queue<string> _urlQueue = new Queue<string>();
+        /// <summary>Список прокси</summary>
+        public Queue<string> UrlQueue
+        {
+            get => _urlQueue;
+            set => Set(ref _urlQueue, value);
+        }
+
 
 
         #region Services
@@ -145,25 +156,52 @@ namespace ProxyParser.ViewModels
         {
             // TOOD: Переделать в сервис
 
-            // Чистый HTML
+            // В очередь ставим 1ый запрос
+            UrlQueue.Enqueue(DataUrl);
+
+            // Создаем HttpClient (Чистый HTML)
             HttpClient client = new HttpClient();
-            client.Timeout = TimeSpan.FromSeconds(5);
+            client.Timeout = TimeSpan.FromSeconds(10);
 
-            client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36");
+            //client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36");
+            client.DefaultRequestHeaders.Add("Connection", "keep-alive");
+            client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36 Edg/89.0.774.75");
+            
+            client.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
+            client.DefaultRequestHeaders.Add("Accept-Language", "en-GB,en;q=0.9,en-US;q=0.8");
+            client.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate");
+            //client.DefaultRequestHeaders.Add("", "");
 
-            var response = await client.GetAsync(DataUrl);
-            var content = await response.Content.ReadAsStringAsync();
 
-            // Парсинг через HtmlAgilityPack 
-            var doc = new HtmlDocument();
-            doc.LoadHtml(content);
+            // В цикле очереди берем запрос и парсим
+            while (UrlQueue.Count > 0)
+            {
+                string currentUrl = UrlQueue.Peek();
+                var response = await client.GetAsync(currentUrl);
+                var content = await response.Content.ReadAsStringAsync();
 
+                // Парсинг через HtmlAgilityPack 
+                var doc = new HtmlDocument();
+                doc.LoadHtml(content);
+
+                // парсим прокси 
+                ParseProxy(doc);
+
+                // парсим ссылки на другие страницы
+                ParseNextLink(doc);
+
+                UrlQueue.Dequeue();
+                await Task.Delay(TimeSpan.FromSeconds(5));
+            }
+        }
+
+        private void ParseProxy(HtmlDocument _doc)
+        {
             // //*[@class="table_block"]/table/tbody/tr[1]/td[1]
-            var rows = doc.DocumentNode
+            var rows = _doc.DocumentNode
                 .SelectNodes("//*[@class='table_block']/table/tbody/tr");
 
-
-            Console.WriteLine($"Items: {rows.Count}");
+            // Console.WriteLine($"Items: {rows.Count}");
 
             foreach (var row in rows)
             {
@@ -198,12 +236,20 @@ namespace ProxyParser.ViewModels
                     ProxyList.Add(proxy);
                 }
                 else
-                {
                     // Если старый прокси - обновляем пинг
                     ProxyList.First(p => p.Ip == ip).LastPing = ping;
-
-                }
             }
+        }        
+        
+        private void ParseNextLink(HtmlDocument _doc)
+        {
+            // //li[@class='next_array']/a
+            string nextUrl = _doc.DocumentNode
+                .SelectSingleNode("//li[@class='next_array']/a").GetAttributeValue("href", "");
+
+            if (nextUrl == "") return;
+           
+            UrlQueue.Enqueue(nextUrl);
         }
     }
 }

@@ -36,9 +36,11 @@ namespace ProxyParserConsole
         {
             // Чистый HTML
             HttpClient client = new HttpClient();
-            client.Timeout = TimeSpan.FromSeconds(5);
+            client.Timeout = TimeSpan.FromSeconds(10);
 
-            client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36");
+            //client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36");
+
+
 
             // TODO: добавить еще куки
 
@@ -81,7 +83,7 @@ namespace ProxyParserConsole
         {
             IWebDriver browser = new ChromeDriver();
             //Browser.Manage().Window.Maximize();
-            browser.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20);
+            browser.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(30);
 
             // Start page
             browser.Navigate().GoToUrl(DataUrl);
