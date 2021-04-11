@@ -16,7 +16,7 @@ namespace ProxyParser.ViewModels
             ParsingStarted = true;
             ParsingPaused = false;
 
-            _ = ParseSiteHideMyNameAsync( /*ProxyList*/);
+            _ = _parseSiteHideMyNameService.StartAsync();
 
             ParsingStarted = false;
         }
